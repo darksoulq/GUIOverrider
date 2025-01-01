@@ -1,0 +1,12 @@
+name: GUIOverrider
+version: '1.0'
+main: me.darksoul.gUIOverrider.GUIOverrider
+api-version: '1.21'
+
+depends:
+  - ProtocolLib
+
+commands:
+  guioverrider:
+    description: Reloads the GUIOverrider configuration.
+    usage: /guioverrider reload

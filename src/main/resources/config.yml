@@ -1,0 +1,4 @@
+titles:
+  # original title: new title
+  # Color codes etc ignored, checks if name "contains" given title
+  # "Example GUI Title": "Example GUI T"
