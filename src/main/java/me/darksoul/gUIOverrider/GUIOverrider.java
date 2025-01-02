@@ -7,9 +7,17 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentBuilder;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.json.simple.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,11 +38,13 @@ public final class GUIOverrider extends JavaPlugin {
             @Override
             public void onPacketSending(PacketEvent event) {
                 PacketContainer packet = event.getPacket();
-                String oTitle = packet.getChatComponents().read(0).getJson();
+                String oTitle = extractTitle(packet.getChatComponents().read(0).getJson());
+
                 for (String key : GUITitles.keySet()) {
-                    if (oTitle.contains(key)) {
+                    if (oTitle.equals(key)) {
                         String nTitle = GUITitles.get(key);
                         packet.getChatComponents().write(0, WrappedChatComponent.fromText(nTitle));
+                        break;
                     }
                 }
             }
@@ -53,6 +63,18 @@ public final class GUIOverrider extends JavaPlugin {
                 }
             }
         }
+    }
+
+    private String extractTitle(String json) {
+        try {
+            JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
+            if (jsonObject.has("text")) {
+                return jsonObject.get("text").getAsString();
+            }
+        } catch (Exception e) {
+            getLogger().warning("Failed to parse title JSON: " + json);
+        }
+        return "";
     }
 
     @Override
@@ -76,5 +98,4 @@ public final class GUIOverrider extends JavaPlugin {
             protocolManager.removePacketListeners(this);
         }
     }
-
 }
